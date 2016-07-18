@@ -73,7 +73,7 @@ class IOSDebugService implements IDebugService {
 	private emulatorDebugBrk(shouldBreak?: boolean): IFuture<void> {
 		return (() => {
 			let platformData = this.$platformsData.getPlatformData(this.platform);
-			if (this.$options.rebuild) {
+			if (!this.$options.livesync) {
 				this.$platformService.buildPlatform(this.platform).wait();
 			}
 			let emulatorPackage = this.$platformService.getLatestApplicationPackageForEmulator(platformData).wait();

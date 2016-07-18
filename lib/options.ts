@@ -37,7 +37,7 @@ export class Options extends commonOptionsLibPath.OptionsBase {
 			bundle: {type: OptionType.Boolean },
 			all: {type: OptionType.Boolean },
 			teamId: { type: OptionType.String },
-			rebuild: { type: OptionType.Boolean, default: true }
+			livesync: { type: OptionType.Boolean }
 		},
 		path.join($hostInfo.isWindows ? process.env.AppData : path.join(osenv.home(), ".local/share"), ".nativescript-cli"),
 			$errors, $staticConfig);

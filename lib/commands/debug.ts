@@ -6,11 +6,12 @@
 		protected $options: IOptions) { }
 
 	execute(args: string[]): IFuture<void> {
-		if (!this.$options.rebuild) {
-			this.$options.debug = true;
-			return this.$usbLiveSyncService.liveSync(this.$devicesService.platform);
-		}
-		return this.debugService.debug();
+		return (() => {
+			if (this.$options.livesync) {
+				this.$usbLiveSyncService.liveSync(this.$devicesService.platform).wait();
+			}
+			this.debugService.debug().wait();
+		}).future<void>()();
 	}
 
 	allowedParameters: ICommandParameter[] = [];

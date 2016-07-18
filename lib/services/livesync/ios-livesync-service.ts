@@ -1,4 +1,5 @@
 import {PlatformLiveSyncServiceBase} from "./platform-livesync-service-base";
+import Future = require("fibers/future");
 import * as helpers from "../../common/helpers";
 import * as net from "net";
 
@@ -15,7 +16,6 @@ class IOSLiveSyncService extends PlatformLiveSyncServiceBase<Mobile.IiOSDevice> 
 		private $injector: IInjector,
 		private $logger: ILogger,
 		private $options: IOptions,
-		private $iOSDebugService: IDebugService,
 		$liveSyncProvider: ILiveSyncProvider) {
 		super(_device, $liveSyncProvider);
 	}
@@ -33,12 +33,12 @@ class IOSLiveSyncService extends PlatformLiveSyncServiceBase<Mobile.IiOSDevice> 
 	}
 
 	protected restartApplication(deviceAppData: Mobile.IDeviceAppData): IFuture<void> {
-		if (this.$options.debug) {
-			return this.$iOSDebugService.debug();
-		} else {
+		if (!this.$options.debugBrk) {
 			let projectData: IProjectData = this.$injector.resolve("projectData");
 			return this.device.applicationManager.restartApplication(deviceAppData.appIdentifier, projectData.projectName);
 		}
+
+		return Future.fromResult();
 	}
 
 	protected reloadPage(deviceAppData: Mobile.IDeviceAppData): IFuture<void> {

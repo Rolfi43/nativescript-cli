@@ -15,23 +15,21 @@ class AndroidLiveSyncService extends PlatformLiveSyncServiceBase<Mobile.IAndroid
 		private $options: IOptions,
 		private $injector: IInjector,
 		private $projectData: IProjectData,
-		private $androidDebugService: IDebugService,
 		$liveSyncProvider: ILiveSyncProvider) {
 		super(_device, $liveSyncProvider);
 	}
 
 	public restartApplication(deviceAppData: Mobile.IDeviceAppData): IFuture<void> {
-		if (this.$options.debug) {
-			return this.$androidDebugService.debug();
-		}
 		return (() => {
-			this.device.adb.executeShellCommand(["chmod", "777", deviceAppData.deviceProjectRootPath, `/data/local/tmp/${deviceAppData.appIdentifier}`]).wait();
+			if (!this.$options.debugBrk) {
+				this.device.adb.executeShellCommand(["chmod", "777", deviceAppData.deviceProjectRootPath, `/data/local/tmp/${deviceAppData.appIdentifier}`]).wait();
 
-			let devicePathRoot = `/data/data/${deviceAppData.appIdentifier}/files`;
-			let devicePath = this.$mobileHelper.buildDevicePath(devicePathRoot, "code_cache", "secondary_dexes", "proxyThumb");
-			this.device.adb.executeShellCommand(["rm", "-rf", devicePath]).wait();
+				let devicePathRoot = `/data/data/${deviceAppData.appIdentifier}/files`;
+				let devicePath = this.$mobileHelper.buildDevicePath(devicePathRoot, "code_cache", "secondary_dexes", "proxyThumb");
+				this.device.adb.executeShellCommand(["rm", "-rf", devicePath]).wait();
 
-			this.device.applicationManager.restartApplication(deviceAppData.appIdentifier).wait();
+				this.device.applicationManager.restartApplication(deviceAppData.appIdentifier).wait();
+			}
 		}).future<void>()();
 	}
 
